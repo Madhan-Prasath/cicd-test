@@ -24,7 +24,7 @@ jobs:
         registry: docker.io
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        tag: 3.8, Latest
+        tag: 3.8
 
          
     
