@@ -1,10 +1,28 @@
-# Dockerfile
-FROM python:3.9
+# Use a smaller, more secure base image
+FROM python:3.9-slim
 
+# Prevent Python from writing .pyc files & buffering logs
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Set working directory
 WORKDIR /scripts
 
-COPY requirements.txt requirements.txt
+# Install system dependencies (only if needed)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN pip install -r requirements.txt
+# Copy only requirements first (better caching)
+COPY requirements.txt .
 
+# Upgrade pip + install deps
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
+# Create non-root user (important for security)
+RUN useradd -m appuser
+USER appuser
+
+# Default command
 ENTRYPOINT ["python"]
